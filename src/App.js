@@ -15,7 +15,8 @@ const GITHUB_LINK = `https://github.com/vickycj`;
 const HELLO = 'Hello';
 const OPENSEA_LINK = '';
 const TOTAL_MINT_COUNT = 50;
-const CONTRACT_ADDRESS = "0xF1aD06077E05ebD0e0c0e8eBC104fE436c560D6F";
+const CONTRACT_ADDRESS = "0x4C2f3e51a158DBc23723997D104060e30f4B2463";
+
 const App = () => {
 
 
@@ -54,6 +55,16 @@ const App = () => {
       }
 
       const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+
+      let chainId = await ethereum.request({ method: 'eth_chainId' });
+      console.log("Connected to chain " + chainId);
+
+
+      const polygonTestNet = "0x13881"; 
+      if (chainId !== polygonTestNet) {
+	      alert("You are not connected to the Polygon Test Network!");
+        return;
+      }
 
       console.log("Connected", accounts[0]);
       setCurrentAccount(accounts[0]);
@@ -102,7 +113,7 @@ const App = () => {
         const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, letsAskNftContract.abi, signer);
   
         console.log("Going to pop wallet now to pay gas...")
-        let nftTxn = await connectedContract.mintLetsAskNft(`${HELLO} ${toValue} ${toValue ? ", " : null}`, `${qValue} ${qValue ? " ?" : null}`, 0 , 0);
+        let nftTxn = await connectedContract.mintLetsAskNft(`${toValue}`, `${qValue} ${qValue ? " ?" : null}`, 0 , 0);
   
         console.log("Mining...please wait.")
         await nftTxn.wait();
