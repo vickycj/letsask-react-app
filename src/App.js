@@ -30,7 +30,7 @@ const App = () => {
             Ask Questions. Mint as NFT. Fully On Chain.
           </p>
           <div class="container">
-            <br></br><br></br>
+          <div class="d-none d-md-block spacer"></div>
             <div class="row">
               <div class="col-sm">
                 <div class="container">
