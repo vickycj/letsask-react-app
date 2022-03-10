@@ -17,6 +17,10 @@
   padding-top: 30px;
 }
 
+#question {
+  height: 100px;
+}
+
 .header {
   margin: 0;
   font-size: 50px;
@@ -29,10 +33,11 @@
 }
 
 .gradient-text {
-  background: -webkit-linear-gradient(left, #60c657 30%, #35aee2 60%);
+  background: -webkit-linear-gradient(left, #FC5C7D, #6A82FB);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: gradient-animation 2s ease infinite;
 }
 
 .cta-button {
@@ -49,15 +54,15 @@
 }
 
 .connect-wallet-button {
-  background: -webkit-linear-gradient(left, #60c657, #35aee2);
+  background: -webkit-linear-gradient(left,  #FC5C7D, #6A82FB);
   background-size: 200% 200%;
-  animation: gradient-animation 4s ease infinite;
+  animation: gradient-animation 2s ease infinite;
 }
 
 .mint-button {
   background: -webkit-linear-gradient(left, #a200d6, #ff6fdf);
   background-size: 200% 200%;
-  animation: gradient-animation 4s ease infinite;
+  animation: gradient-animation 2s ease infinite;
   margin-right: 15px;
 }
 

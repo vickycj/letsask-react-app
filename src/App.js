@@ -2,6 +2,9 @@ import logo from './logo.svg';
 import './App.css';
 import twitterLogo from './assets/twitter-logo.svg';
 import githubLogo from './assets/github-logo.svg';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import React from 'react';
+import { Form, FormGroup, Input, Label } from 'reactstrap';
 
 // Constants
 const TWITTER_HANDLE = '0xVignesh';
@@ -26,7 +29,47 @@ const App = () => {
           <p className="sub-text">
             Ask Questions. Mint as NFT. Fully On Chain.
           </p>
-          {renderNotConnectedContainer()}
+          <div class="container">
+            <br></br><br></br>
+            <div class="row">
+              <div class="col-sm">
+                <div class="container">
+                  <Form inline>
+                    <FormGroup floating>
+                      <Input
+                        id="to"
+                        name="to"
+                        placeholder="To"
+                        type="text"
+                      />
+                      <Label for="to">
+                        To
+                      </Label>
+                    </FormGroup>
+                    {' '}
+                    <FormGroup floating>
+                      <Input
+                        id="question"
+                        name="question"
+                        placeholder="Question"
+                        rows="3"
+                        type="textarea"
+                      />
+                      <Label for="question">
+                        Question
+                      </Label>
+                    </FormGroup>
+                    {' '}
+                  </Form>
+                  {renderNotConnectedContainer()}
+                </div>
+              </div>
+              <div class="col-sm">
+                One of three columns
+              </div>
+            </div>
+          </div>
+
         </div>
         <div className="footer-container">
           <div className='footer-text'>Created by </div>
