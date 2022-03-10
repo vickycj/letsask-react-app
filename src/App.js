@@ -1,10 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
 import twitterLogo from './assets/twitter-logo.svg';
+import githubLogo from './assets/github-logo.svg';
 
 // Constants
 const TWITTER_HANDLE = '0xVignesh';
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
+const GITHUB_LINK = `https://github.com/vickycj`;
 const OPENSEA_LINK = '';
 const TOTAL_MINT_COUNT = 50;
 
@@ -27,13 +29,21 @@ const App = () => {
           {renderNotConnectedContainer()}
         </div>
         <div className="footer-container">
+          <div className='footer-text'>Created by </div>
+          <img alt="Twitter Logo" className="github-logo" src={githubLogo} />
+          <a
+            className="footer-text"
+            href={GITHUB_LINK}
+            target="_blank"
+            rel="noreferrer"
+          >{`@vickycj`}</a>
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
           <a
             className="footer-text"
             href={TWITTER_LINK}
             target="_blank"
             rel="noreferrer"
-          >{`built on @${TWITTER_HANDLE}`}</a>
+          >{`@${TWITTER_HANDLE}`}</a>
         </div>
       </div>
     </div>
