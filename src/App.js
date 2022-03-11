@@ -15,7 +15,7 @@ const GITHUB_LINK = `https://github.com/vickycj`;
 const HELLO = 'Hello';
 const OPENSEA_LINK = '';
 const TOTAL_MINT_COUNT = 50;
-const CONTRACT_ADDRESS = "0x4C2f3e51a158DBc23723997D104060e30f4B2463";
+const CONTRACT_ADDRESS = "0x0e63c4739Fa111a42e097acB274F8c75e41C3C53";
 
 const App = () => {
 
@@ -113,7 +113,7 @@ const App = () => {
         const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, letsAskNftContract.abi, signer);
   
         console.log("Going to pop wallet now to pay gas...")
-        let nftTxn = await connectedContract.mintLetsAskNft(`${toValue}`, `${qValue} ${qValue ? " ?" : null}`, 0 , 0);
+        let nftTxn = await connectedContract.mintLetsAskNft(`${toValue}`, `${qValue}`);
   
         console.log("Mining...please wait.")
         await nftTxn.wait();
@@ -209,8 +209,8 @@ const App = () => {
               </div>
               <div class="col">
                 <div class="container justify-content-center">
-                  <p className="sub-text">
-                    {`${HELLO}`} {`${toValue}`} {toValue ? ", " : null} {`${qValue}`} {qValue ? " ?" : null}
+                  <p className="sub-text gradient-text">
+                    {`${HELLO}`} {`${toValue}`} {toValue ? ", " : null} {`${qValue}`} 
                   </p>
                 </div>
               </div>
