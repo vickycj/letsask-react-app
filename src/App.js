@@ -293,7 +293,7 @@ const App = () => {
           <div class="container">
             <div class="d-none d-md-block spacer"></div>
             <div class="row">
-              <div class="col-sm-12 col-md-8">
+              <div class="col-sm">
                 <div class="container">
                   <Form inline>
                     <FormGroup floating>
