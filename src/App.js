@@ -3,20 +3,21 @@ import './App.css';
 import twitterLogo from './assets/twitter-logo.svg';
 import githubLogo from './assets/github-logo.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ethers } from "ethers";
 import { Form, FormGroup, Input, Label } from 'reactstrap';
 import letsAskNftContract from './utils/LetsAskNftContract.json';
+import ReactCanvasConfetti from "react-canvas-confetti";
 
 // Constants
 const TWITTER_HANDLE = '0xVignesh';
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 const GITHUB_LINK = `https://github.com/vickycj`;
 const HELLO = 'Hello';
-const OPENSEA_LINK = 'https://testnets.opensea.io';
-const POLYSCAN_LINK = 'https://mumbai.polygonscan.com';
-const CONTRACT_ADDRESS = "0x15575c63bf876BB2617282661634b218Bc4578aF";
-const CHAIN_ID = "0x13881";
+const OPENSEA_LINK = 'https://opensea.io';
+const POLYSCAN_LINK = 'https://polygonscan.com';
+const CONTRACT_ADDRESS = "0xAD5CA872f92a8C789c13E2487251dE2849173Bb1";
+const CHAIN_ID = "0x89";
 
 const MINT_STATUS = {
   NOT_MINTED: 1,
@@ -26,23 +27,86 @@ const MINT_STATUS = {
   MINED: 5,
 };
 
+
+const canvasStyles = {
+  position: "fixed",
+  pointerEvents: "none",
+  width: "100%",
+  height: "100%",
+  top: 0,
+  left: 0
+};
+
+function getAnimationSettings(angle, originX) {
+  return {
+    particleCount: 3,
+    angle,
+    spread: 55,
+    origin: { x: originX },
+    colors: ["#FC5C7D", "#6A82FB"]
+  };
+}
+
+
 const App = () => {
 
 
 
-  const [currentAccount, setCurrentAccount] = React.useState("");
+  const [currentAccount, setCurrentAccount] = useState("");
 
-  const [buttonState, setButtonState] = React.useState(false);
+  const [buttonState, setButtonState] = useState(false);
 
-  const [mintingStatus, setMintingStatus] = React.useState(MINT_STATUS.NOT_MINTED);
+  const [mintingStatus, setMintingStatus] = useState(MINT_STATUS.NOT_MINTED);
 
-  const [buttonText, setbuttonText] = React.useState("Mint NFT");
+  const [buttonText, setbuttonText] = useState("Mint NFT");
 
-  const [transactionHash, setTransactionHash] = React.useState("");
+  const [transactionHash, setTransactionHash] = useState("");
 
-  const [tokenId, setTokenId] = React.useState("");
+  const [tokenIdValue, setTokenId] = useState("");
 
-  const [disclaimerText, setDisclaimerText] = React.useState("");
+  const [disclaimerText, setDisclaimerText] = useState("");
+
+  const [toValue, setToValue] = useState('');
+
+  const [qValue, setQValue] = useState('');
+
+
+  const refAnimationInstance = useRef(null);
+  const [intervalId, setIntervalId] = useState();
+
+  const getInstance = useCallback((instance) => {
+    refAnimationInstance.current = instance;
+  }, []);
+
+  const nextTickAnimation = useCallback(() => {
+    if (refAnimationInstance.current) {
+      refAnimationInstance.current(getAnimationSettings(60, 0));
+      refAnimationInstance.current(getAnimationSettings(120, 1));
+    }
+  }, []);
+
+  const startAnimation = useCallback(() => {
+    if (!intervalId) {
+      setIntervalId(setInterval(nextTickAnimation, 16));
+    }
+  }, [nextTickAnimation, intervalId]);
+
+  const pauseAnimation = useCallback(() => {
+    clearInterval(intervalId);
+    setIntervalId(null);
+  }, [intervalId]);
+
+  const stopAnimation = useCallback(() => {
+    clearInterval(intervalId);
+    setIntervalId(null);
+    refAnimationInstance.current && refAnimationInstance.current.reset();
+  }, [intervalId]);
+
+  useEffect(() => {
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [intervalId]);
 
   const checkIfWalletIsConnected = async () => {
 
@@ -99,7 +163,7 @@ const App = () => {
   }
 
   const setupEventListener = async () => {
-
+    console.log("Setup event listener!")
     try {
       const { ethereum } = window;
 
@@ -111,15 +175,21 @@ const App = () => {
 
 
         connectedContract.on("LetsAskNftMinted", (from, tokenId) => {
-          console.log(from, tokenId.toNumber())
+          console.log(tokenId + ": minted token");
+          console.log(tokenIdValue);
+
           setMintingStatus(MINT_STATUS.SUCCESS);
           setButtonState(false);
           setbuttonText("Check on Opensea");
           setDisclaimerText("It will take sometime to reflect on Open sea");
           setTokenId(tokenId.toNumber())
+          startAnimation();
+          setTimeout(() => {
+            pauseAnimation();
+          }, 10000);
         });
 
-        console.log("Setup event listener!")
+
 
       } else {
         console.log("Ethereum object doesn't exist!");
@@ -138,11 +208,11 @@ const App = () => {
       if (mintingStatus == MINT_STATUS.MINTING || mintingStatus == MINT_STATUS.FAILED) {
         return;
       } else if (mintingStatus == MINT_STATUS.MINED) {
-       // const url = `${POLYSCAN_LINK}/tx/${transactionHash}`;
-       // window.open(url, '_blank');
+        const url = `${POLYSCAN_LINK}/tx/${transactionHash}`;
+        window.open(url, '_blank');
         return;
       } else if (mintingStatus == MINT_STATUS.SUCCESS) {
-        const url = `${OPENSEA_LINK}/assets/${CONTRACT_ADDRESS}/${tokenId}`
+        const url = `${OPENSEA_LINK}/assets/${CONTRACT_ADDRESS}/${tokenIdValue}`
         window.open(url, '_blank');
         return;
       }
@@ -163,9 +233,9 @@ const App = () => {
         console.log("Mining...please wait.")
         await nftTxn.wait();
         setMintingStatus(MINT_STATUS.MINED);
-       // setButtonState(false);
+        setButtonState(false);
         setTransactionHash(nftTxn.hash)
-       // setbuttonText("Check on Polyscan")
+        setbuttonText("Check on Polyscan")
         console.log(`Mined, see transaction: ${POLYSCAN_LINK}/tx/${nftTxn.hash}`);
 
       } else {
@@ -182,23 +252,21 @@ const App = () => {
     </button>
   );
 
-  useEffect(() => {
-    checkIfWalletIsConnected();
-  }, [])
 
-
-  const [toValue, setToValue] = React.useState('');
 
   const handleToValueChange = (event) => {
     setToValue(event.target.value);
   };
 
-  const [qValue, setQValue] = React.useState('');
+
 
   const handleQValueChange = (event) => {
     setQValue(event.target.value);
   };
 
+  useEffect(() => {
+    checkIfWalletIsConnected();
+  }, [])
 
   return (
     <div className="App">
@@ -255,7 +323,7 @@ const App = () => {
                       }
                     </button>
                   )}
-                  <div className='disclaimer-text'>{ disclaimerText }</div>
+                  <div className='disclaimer-text'>{disclaimerText}</div>
                 </div>
               </div>
               <div class="col">
@@ -287,6 +355,7 @@ const App = () => {
           >{`@${TWITTER_HANDLE}`}</a>
         </div>
       </div>
+      <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
     </div>
   );
 };
