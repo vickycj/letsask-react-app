@@ -9,6 +9,8 @@ import { ethers } from "ethers";
 import { Form, FormGroup, Input, Label } from 'reactstrap';
 import letsAskNftContract from './utils/LetsAskNftContract.json';
 import ReactCanvasConfetti from "react-canvas-confetti";
+import { initializeApp } from "firebase/app";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 // Constants
 const TWITTER_HANDLE = '0xVignesh';
@@ -39,6 +41,16 @@ const canvasStyles = {
   left: 0
 };
 
+const firebaseConfig = {
+  apiKey: "AIzaSyDrgKfLXqz1y8RCgy25hiwavRRwtWEM04w",
+  authDomain: "letsask-f4407.firebaseapp.com",
+  projectId: "letsask-f4407",
+  storageBucket: "letsask-f4407.appspot.com",
+  messagingSenderId: "254366609396",
+  appId: "1:254366609396:web:f1eca3b8972a9ce70153a1",
+  measurementId: "G-2YX02FN0BR"
+};
+
 function getAnimationSettings(angle, originX) {
   return {
     particleCount: 3,
@@ -52,7 +64,8 @@ function getAnimationSettings(angle, originX) {
 
 const App = () => {
 
-
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 
   const [currentAccount, setCurrentAccount] = useState("");
 
@@ -111,7 +124,7 @@ const App = () => {
   }, [intervalId]);
 
   const checkIfWalletIsConnected = async () => {
-
+    logEvent(analytics, 'page_load');
     const { ethereum } = window;
 
     if (!ethereum) {
@@ -137,6 +150,7 @@ const App = () => {
 
   const connectWallet = async () => {
     try {
+      logEvent(analytics, 'wallet_connect');
       const { ethereum } = window;
 
       if (!ethereum) {
@@ -214,10 +228,12 @@ const App = () => {
       if (mintingStatus == MINT_STATUS.MINTING || mintingStatus == MINT_STATUS.FAILED) {
         return;
       } else if (mintingStatus == MINT_STATUS.MINED) {
+        logEvent(analytics, 'check_on_polygon');
         const url = `${POLYSCAN_LINK}/tx/${transactionHash}`;
         window.open(url, '_blank');
         return;
       } else if (mintingStatus == MINT_STATUS.SUCCESS) {
+        logEvent(analytics, 'check_on_open_sea');
         const url = `${OPENSEA_LINK}/assets/${CONTRACT_ADDRESS}/${tokenIdValue}`
         window.open(url, '_blank');
         return;
@@ -235,6 +251,7 @@ const App = () => {
 
         console.log("Going to pop wallet now to pay gas...")
         let nftTxn = await connectedContract.mintLetsAskNft(`${toValue}`, `${qValue}`);
+        logEvent(analytics, 'minting');
         setMintingStatus(MINT_STATUS.MINTING);
         setbuttonText("Minting....")
         console.log("Mining...please wait.")
@@ -247,12 +264,14 @@ const App = () => {
         setTimeout(() => {
           pauseAnimation();
         }, 10000);
+        logEvent(analytics, 'minting_succees');
         console.log(`Mined, see transaction: ${POLYSCAN_LINK}/tx/${nftTxn.hash}`);
 
       } else {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
+      logEvent(analytics, 'minting_failed');
       setMintingStatus(MINT_STATUS.FAILED);
       setButtonState(true);
       setbuttonText("Failed");
@@ -274,6 +293,7 @@ const App = () => {
   };
 
   const onClickCollection = () => {
+    logEvent(analytics, 'open_collection');
     const url = `${OPENSEA_LINK}/collection/letsask`
     window.open(url, '_blank');
   };
@@ -282,7 +302,20 @@ const App = () => {
     setQValue(event.target.value);
   };
 
+  const twitterClick = () => {
+    logEvent(analytics, 'twitter_clicked');
+    const url = `${TWITTER_LINK}`
+    window.open(url, '_blank');
+  };
+
+  const githubClick = () => {
+    logEvent(analytics, 'github_clicked');
+    const url = `${GITHUB_LINK}`
+    window.open(url, '_blank');
+  };
+
   useEffect(() => {
+    logEvent(analytics, 'opened');
     checkIfWalletIsConnected();
   }, [])
 
@@ -364,19 +397,13 @@ const App = () => {
         <div className="footer-container">
           <div className='footer-text'>Created by </div>
           <img alt="Twitter Logo" className="github-logo" src={githubLogo} />
-          <a
+          <div onClick={githubClick}
             className="footer-text"
-            href={GITHUB_LINK}
-            target="_blank"
-            rel="noreferrer"
-          >{`@vickycj`}</a>
+          >{`@vickycj`}</div>
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
-          <a
+          <div onClick={twitterClick}
             className="footer-text"
-            href={TWITTER_LINK}
-            target="_blank"
-            rel="noreferrer"
-          >{`@${TWITTER_HANDLE}`}</a>
+          >{`@${TWITTER_HANDLE}`}</div>
         </div>
       </div>
       <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
