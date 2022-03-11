@@ -340,7 +340,7 @@ const App = () => {
                   <div className='disclaimer-text'>{disclaimerText}</div>
                 </div>
               </div>
-              <div class="col-sm">
+              <div class="col-sm d-none d-md-block">
                 <div class="container justify-content-center">
                   <p className="sub-text gradient-text">
                     {`${HELLO}`} {`${toValue}`} {toValue ? ", " : null} {`${qValue}`}
