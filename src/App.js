@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import twitterLogo from './assets/twitter-logo.svg';
 import githubLogo from './assets/github-logo.svg';
+import opensealogo from './assets/opensea.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ethers } from "ethers";
@@ -243,9 +244,9 @@ const App = () => {
         setTransactionHash(nftTxn.hash)
         setbuttonText("Check on Polyscan")
         startAnimation();
-          setTimeout(() => {
-            pauseAnimation();
-          }, 10000);
+        setTimeout(() => {
+          pauseAnimation();
+        }, 10000);
         console.log(`Mined, see transaction: ${POLYSCAN_LINK}/tx/${nftTxn.hash}`);
 
       } else {
@@ -272,7 +273,10 @@ const App = () => {
     setToValue(event.target.value);
   };
 
-
+  const onClickCollection = () => {
+    const url = `${OPENSEA_LINK}/collection/letsask`
+    window.open(url, '_blank');
+  };
 
   const handleQValueChange = (event) => {
     setQValue(event.target.value);
@@ -288,7 +292,7 @@ const App = () => {
         <div className="header-container">
           <p className="header gradient-text">Question the status Quo</p>
           <p className="sub-text">
-            Ask anybody anything. Mint as Fully On Chain NFT. 
+            Ask anybody anything. Mint as Fully On Chain NFT.
           </p>
           <div class="container">
             <div class="d-none d-md-block spacer"></div>
@@ -340,11 +344,17 @@ const App = () => {
                   <div className='disclaimer-text'>{disclaimerText}</div>
                 </div>
               </div>
-              <div class="col-sm d-none d-sm-block">
+              <div class="col-sm">
                 <div class="container justify-content-center">
-                  <p className="sub-text gradient-text">
-                    {`${HELLO}`} {`${toValue}`} {toValue ? ", " : null} {`${qValue}`}
-                  </p>
+
+                  {
+                    toValue !== "" || qValue !== "" ? (<p className="sub-text gradient-text">
+                      {`${HELLO}`} {`${toValue}`} {toValue ? ", " : null} {`${qValue}`}
+                    </p>) : (
+
+                      <div class="container" onClick={onClickCollection} className="cursor-div" ><div className='sub-text-left'>Check out our Collection on</div> <div><img alt="Open Sea" src={opensealogo} /></div> </div>
+                    )
+                  }
                 </div>
               </div>
             </div>

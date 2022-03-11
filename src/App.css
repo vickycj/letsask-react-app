@@ -32,6 +32,21 @@
   color: white;
 }
 
+.sub-text-left {
+  font-size: 20px;
+  color: white;
+  padding: 10px;
+}
+
+.cursor-div {
+  cursor: pointer;
+}
+
+.cursor-div img {
+  height: 100%;
+  width: 100%;
+}
+
 .disclaimer-text {
   font-size: 15px;
   padding: 5px;
