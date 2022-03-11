@@ -13,14 +13,37 @@ const TWITTER_HANDLE = '0xVignesh';
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 const GITHUB_LINK = `https://github.com/vickycj`;
 const HELLO = 'Hello';
-const OPENSEA_LINK = '';
-const TOTAL_MINT_COUNT = 50;
-const CONTRACT_ADDRESS = "0x0e63c4739Fa111a42e097acB274F8c75e41C3C53";
+const OPENSEA_LINK = 'https://testnets.opensea.io';
+const POLYSCAN_LINK = 'https://mumbai.polygonscan.com';
+const CONTRACT_ADDRESS = "0x15575c63bf876BB2617282661634b218Bc4578aF";
+const CHAIN_ID = "0x13881";
+
+const MINT_STATUS = {
+  NOT_MINTED: 1,
+  MINTING: 2,
+  SUCCESS: 3,
+  FAILED: 4,
+  MINED: 5,
+};
 
 const App = () => {
 
 
+
   const [currentAccount, setCurrentAccount] = React.useState("");
+
+  const [buttonState, setButtonState] = React.useState(false);
+
+  const [mintingStatus, setMintingStatus] = React.useState(MINT_STATUS.NOT_MINTED);
+
+  const [buttonText, setbuttonText] = React.useState("Mint NFT");
+
+  const [transactionHash, setTransactionHash] = React.useState("");
+
+  const [tokenId, setTokenId] = React.useState("");
+
+  const [disclaimerText, setDisclaimerText] = React.useState("");
+
   const checkIfWalletIsConnected = async () => {
 
     const { ethereum } = window;
@@ -40,6 +63,7 @@ const App = () => {
       const account = accounts[0];
       console.log("Found an authorized account:", account);
       setCurrentAccount(account);
+      setupEventListener()
     } else {
       console.log("No authorized account found");
     }
@@ -60,22 +84,22 @@ const App = () => {
       console.log("Connected to chain " + chainId);
 
 
-      const polygonTestNet = "0x13881"; 
-      if (chainId !== polygonTestNet) {
-	      alert("You are not connected to the Polygon Test Network!");
+
+      if (chainId !== CHAIN_ID) {
+        alert("You are not connected to the Polygon Network!");
         return;
       }
 
       console.log("Connected", accounts[0]);
       setCurrentAccount(accounts[0]);
-      setupEventListener() 
+      setupEventListener()
     } catch (error) {
       console.log(error);
     }
   }
 
   const setupEventListener = async () => {
-    
+
     try {
       const { ethereum } = window;
 
@@ -85,10 +109,14 @@ const App = () => {
         const signer = provider.getSigner();
         const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, letsAskNftContract.abi, signer);
 
-      
+
         connectedContract.on("LetsAskNftMinted", (from, tokenId) => {
           console.log(from, tokenId.toNumber())
-          alert(`Hey there! We've minted your NFT and sent it to your wallet. It may be blank right now. It can take a max of 10 min to show up on OpenSea. Here's the link: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId.toNumber()}`)
+          setMintingStatus(MINT_STATUS.SUCCESS);
+          setButtonState(false);
+          setbuttonText("Check on Opensea");
+          setDisclaimerText("It will take sometime to reflect on Open sea");
+          setTokenId(tokenId.toNumber())
         });
 
         console.log("Setup event listener!")
@@ -103,23 +131,43 @@ const App = () => {
 
 
   const askContractToMintNft = async () => {
-  
     try {
+      if (toValue == null || toValue === "" || qValue == null || qValue === "") {
+        return;
+      }
+      if (mintingStatus == MINT_STATUS.MINTING || mintingStatus == MINT_STATUS.FAILED) {
+        return;
+      } else if (mintingStatus == MINT_STATUS.MINED) {
+       // const url = `${POLYSCAN_LINK}/tx/${transactionHash}`;
+       // window.open(url, '_blank');
+        return;
+      } else if (mintingStatus == MINT_STATUS.SUCCESS) {
+        const url = `${OPENSEA_LINK}/assets/${CONTRACT_ADDRESS}/${tokenId}`
+        window.open(url, '_blank');
+        return;
+      }
+      setMintingStatus(MINT_STATUS.MINTING);
+      setButtonState(true);
+      setbuttonText("Minting....")
+
       const { ethereum } = window;
-  
+
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, letsAskNftContract.abi, signer);
-  
+
         console.log("Going to pop wallet now to pay gas...")
         let nftTxn = await connectedContract.mintLetsAskNft(`${toValue}`, `${qValue}`);
-  
+
         console.log("Mining...please wait.")
         await nftTxn.wait();
-        
-        console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${nftTxn.hash}`);
-  
+        setMintingStatus(MINT_STATUS.MINED);
+       // setButtonState(false);
+        setTransactionHash(nftTxn.hash)
+       // setbuttonText("Check on Polyscan")
+        console.log(`Mined, see transaction: ${POLYSCAN_LINK}/tx/${nftTxn.hash}`);
+
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -201,16 +249,19 @@ const App = () => {
                   {currentAccount === "" ? (
                     renderNotConnectedContainer()
                   ) : (
-                    <button onClick={askContractToMintNft} className="cta-button connect-wallet-button">
-                      Mint NFT
+                    <button disabled={buttonState} onClick={askContractToMintNft} className="cta-button connect-wallet-button">
+                      {
+                        buttonText
+                      }
                     </button>
                   )}
+                  <div className='disclaimer-text'>{ disclaimerText }</div>
                 </div>
               </div>
               <div class="col">
                 <div class="container justify-content-center">
                   <p className="sub-text gradient-text">
-                    {`${HELLO}`} {`${toValue}`} {toValue ? ", " : null} {`${qValue}`} 
+                    {`${HELLO}`} {`${toValue}`} {toValue ? ", " : null} {`${qValue}`}
                   </p>
                 </div>
               </div>

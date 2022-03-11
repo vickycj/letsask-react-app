@@ -32,6 +32,11 @@
   color: white;
 }
 
+.disclaimer-text {
+  font-size: 15px;
+  padding: 5px;
+  color: white;
+}
 .gradient-text {
   background: -webkit-linear-gradient(left, #FC5C7D, #6A82FB);
   background-clip: text;
