@@ -293,7 +293,7 @@ const App = () => {
           <div class="container">
             <div class="d-none d-md-block spacer"></div>
             <div class="row">
-              <div class="col-sm">
+              <div class="col-sm-12 col-md-8">
                 <div class="container">
                   <Form inline>
                     <FormGroup floating>
@@ -340,7 +340,7 @@ const App = () => {
                   <div className='disclaimer-text'>{disclaimerText}</div>
                 </div>
               </div>
-              <div class="col-sm d-none d-md-block">
+              <div class="col-sm d-none d-sm-block">
                 <div class="container justify-content-center">
                   <p className="sub-text gradient-text">
                     {`${HELLO}`} {`${toValue}`} {toValue ? ", " : null} {`${qValue}`}
