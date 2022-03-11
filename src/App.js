@@ -25,6 +25,7 @@ const MINT_STATUS = {
   SUCCESS: 3,
   FAILED: 4,
   MINED: 5,
+  PROCESSING: 6,
 };
 
 
@@ -195,6 +196,10 @@ const App = () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
+      setMintingStatus(MINT_STATUS.FAILED);
+      setButtonState(true);
+      setbuttonText("Failed");
+      setDisclaimerText("Not connected to network");
       console.log(error)
     }
   }
@@ -216,10 +221,10 @@ const App = () => {
         window.open(url, '_blank');
         return;
       }
-      setMintingStatus(MINT_STATUS.MINTING);
-      setButtonState(true);
-      setbuttonText("Minting....")
 
+      setMintingStatus(MINT_STATUS.PROCESSING);
+      setButtonState(true);
+      setbuttonText("Processing....")
       const { ethereum } = window;
 
       if (ethereum) {
@@ -229,19 +234,28 @@ const App = () => {
 
         console.log("Going to pop wallet now to pay gas...")
         let nftTxn = await connectedContract.mintLetsAskNft(`${toValue}`, `${qValue}`);
-
+        setMintingStatus(MINT_STATUS.MINTING);
+        setbuttonText("Minting....")
         console.log("Mining...please wait.")
         await nftTxn.wait();
         setMintingStatus(MINT_STATUS.MINED);
         setButtonState(false);
         setTransactionHash(nftTxn.hash)
         setbuttonText("Check on Polyscan")
+        startAnimation();
+          setTimeout(() => {
+            pauseAnimation();
+          }, 10000);
         console.log(`Mined, see transaction: ${POLYSCAN_LINK}/tx/${nftTxn.hash}`);
 
       } else {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
+      setMintingStatus(MINT_STATUS.FAILED);
+      setButtonState(true);
+      setbuttonText("Failed");
+      setDisclaimerText("Try increasing gas limit in metamask");
       console.log(error)
     }
   }
