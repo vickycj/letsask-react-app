@@ -288,12 +288,12 @@ const App = () => {
         <div className="header-container">
           <p className="header gradient-text">Question the status Quo</p>
           <p className="sub-text">
-            Ask Questions. Mint as NFT. Fully On Chain.
+            Ask anybody anything. Mint as Fully On Chain NFT. 
           </p>
           <div class="container">
             <div class="d-none d-md-block spacer"></div>
             <div class="row">
-              <div class="col">
+              <div class="col-sm">
                 <div class="container">
                   <Form inline>
                     <FormGroup floating>
@@ -340,7 +340,7 @@ const App = () => {
                   <div className='disclaimer-text'>{disclaimerText}</div>
                 </div>
               </div>
-              <div class="col">
+              <div class="col-sm">
                 <div class="container justify-content-center">
                   <p className="sub-text gradient-text">
                     {`${HELLO}`} {`${toValue}`} {toValue ? ", " : null} {`${qValue}`}
